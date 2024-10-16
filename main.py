@@ -19,7 +19,15 @@ if 'clicked' not in st.session_state:
 def clicked(button):
     st.session_state.clicked[button]=True
 
-if st.button("Let's get started"):
+st.button("Let's get started", on_click= clicked, args=[1])
+if st.session_state.clicked[1]:
     st.header("Exploraty Data Analysis")
     st.subheader('Solution')
+
+    #user upload the file
     user_csv = st.file_uploader("Upload your file here", type="csv")
+    if user_csv is not None:
+        user_csv.seek[0]
+        df = pd.read_csv(user_csv,low_memory=False)
+    
+    
