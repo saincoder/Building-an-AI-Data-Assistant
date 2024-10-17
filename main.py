@@ -23,6 +23,30 @@ if api_key:
 else:
     print("Failed to load LLM: API key might be missing.")
 
+
+#Function of main script
+pandas_agent = create_pandas_dataframe_agent(llm, df, verbose=True, allow_dangerous_code=True)
+    # Now you can ask questions about the DataFrame
+def function_agent():
+        st.write("**Data Overview**")
+        st.write("The first rows of your dataset look like this:")
+        st.write(df.head())
+        st.write("**Data Cleaning**")
+        columns_df = pandas_agent.run("What are the meaning of the columns?")
+        st.write(columns_df)
+        missing_values = pandas_agent.run("How many missing values does this dataframe have? Start the answer with 'There are'")
+        st.write(missing_values)
+        duplicates = pandas_agent.run("Are there any duplicate values and if so where?")
+        st.write(duplicates)
+        st.write("**Data Summarisation**")
+        st.write(df.describe())
+        correlation_analysis = pandas_agent.run("Calculate correlations between numerical variables to identify potential relationships.")
+        st.write(correlation_analysis)
+        outliers = pandas_agent.run("Identify outliers in the data that may be erroneous or that may have a significant impact on the analysis.")
+        st.write(outliers)
+        new_features = pandas_agent.run("What new features would be interesting to create?.")
+        st.write(new_features)
+        return
 # Main body
 st.title('AI Assistance for Data Science')
 st.write('Hello, I\'m your AI Assistant and I am here to help you with your Data Science Projects.')
@@ -45,10 +69,9 @@ if st.session_state.clicked[1]:
     if user_csv is not None:
         user_csv.seek(0)
         df = pd.read_csv(user_csv, low_memory=False)
-        st.write(df.head())  # Display the first few rows of the uploaded CSV file
 
-    # Integrate the LLM
-    with st.sidebar:
+# Integrate the LLM
+with st.sidebar:
         with st.expander('What are the steps of EDA'):
             with st.spinner("Getting response from the LLM..."):
                 try:
@@ -64,27 +87,6 @@ if st.session_state.clicked[1]:
                     st.error(f"Failed to get response from LLM: {e}")
     
 
-pandas_agent = create_pandas_dataframe_agent(llm, df, verbose=True, allow_dangerous_code=True, handle_parsing_errors=True)
-# Now you can ask questions about the DataFrame
-def function_agent():
-    st.write("**Data Overview**")
-    st.write("The first rows of your dataset look like this:")
-    st.write(df.head())
-    st.write("**Data Cleaning**")
-    columns_df = pandas_agent.run("What are the meaning of the columns?")
-    st.write(columns_df)
-    missing_values = pandas_agent.run("How many missing values does this dataframe have? Start the answer with 'There are'")
-    st.write(missing_values)
-    duplicates = pandas_agent.run("Are there any duplicate values and if so where?")
-    st.write(duplicates)
-    st.write("**Data Summarisation**")
-    st.write(df.describe())
-    correlation_analysis = pandas_agent.run("Calculate correlations between numerical variables to identify potential relationships.")
-    st.write(correlation_analysis)
-    outliers = pandas_agent.run("Identify outliers in the data that may be erroneous or that may have a significant impact on the analysis.")
-    st.write(outliers)
-    new_features = pandas_agent.run("What new features would be interesting to create?.")
-    st.write(new_features)
-    return
+
 
 function_agent()
